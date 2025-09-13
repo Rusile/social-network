@@ -1,0 +1,4 @@
+build
+.gradle
+out
+db_data
