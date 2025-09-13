@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: social_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: social
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d social || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: social-network-api-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/social
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: social
+      DB_HOST: db
+      DB_PORT: 5432
+      JDBC_URL: jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
+    depends_on:
+      - db
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8080/ping" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+
+volumes:
+  db_data:
