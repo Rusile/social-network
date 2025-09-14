@@ -5,15 +5,16 @@ package ru.rusile.socialnetwork.jooq.tables
 
 
 import java.time.LocalDate
+import java.util.UUID
 
 import kotlin.collections.Collection
 
 import org.jooq.Condition
 import org.jooq.Field
 import org.jooq.ForeignKey
-import org.jooq.Identity
 import org.jooq.InverseForeignKey
 import org.jooq.Name
+import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
@@ -24,11 +25,16 @@ import org.jooq.Stringly
 import org.jooq.Table
 import org.jooq.TableField
 import org.jooq.TableOptions
+import org.jooq.UniqueKey
 import org.jooq.impl.DSL
+import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
 import org.jooq.impl.TableImpl
 
 import ru.rusile.socialnetwork.jooq.Public
+import ru.rusile.socialnetwork.jooq.keys.USERS_PKEY
+import ru.rusile.socialnetwork.jooq.keys.USER_CREDS__USER_CREDS_USER_ID_FKEY
+import ru.rusile.socialnetwork.jooq.tables.UserCreds.UserCredsPath
 import ru.rusile.socialnetwork.jooq.tables.records.UsersRecord
 
 
@@ -72,27 +78,32 @@ open class Users(
     /**
      * The column <code>public.users.id</code>.
      */
-    val ID: TableField<UsersRecord, Long?> = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "")
+    val ID: TableField<UsersRecord, UUID?> = createField(DSL.name("id"), SQLDataType.UUID.nullable(false), this, "")
 
     /**
      * The column <code>public.users.surname</code>.
      */
-    val SURNAME: TableField<UsersRecord, String?> = createField(DSL.name("surname"), SQLDataType.VARCHAR(255), this, "")
+    val SURNAME: TableField<UsersRecord, String?> = createField(DSL.name("surname"), SQLDataType.VARCHAR(255).nullable(false), this, "")
 
     /**
      * The column <code>public.users.name</code>.
      */
-    val NAME: TableField<UsersRecord, String?> = createField(DSL.name("name"), SQLDataType.VARCHAR(255), this, "")
+    val NAME: TableField<UsersRecord, String?> = createField(DSL.name("name"), SQLDataType.VARCHAR(255).nullable(false), this, "")
 
     /**
      * The column <code>public.users.birth_date</code>.
      */
-    val BIRTH_DATE: TableField<UsersRecord, LocalDate?> = createField(DSL.name("birth_date"), SQLDataType.LOCALDATE, this, "")
+    val BIRTH_DATE: TableField<UsersRecord, LocalDate?> = createField(DSL.name("birth_date"), SQLDataType.LOCALDATE.nullable(false), this, "")
 
     /**
      * The column <code>public.users.city</code>.
      */
-    val CITY: TableField<UsersRecord, String?> = createField(DSL.name("city"), SQLDataType.VARCHAR(255), this, "")
+    val CITY: TableField<UsersRecord, String?> = createField(DSL.name("city"), SQLDataType.VARCHAR(255).nullable(false), this, "")
+
+    /**
+     * The column <code>public.users.biography</code>.
+     */
+    val BIOGRAPHY: TableField<UsersRecord, String?> = createField(DSL.name("biography"), SQLDataType.VARCHAR(512), this, "")
 
     private constructor(alias: Name, aliased: Table<UsersRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<UsersRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -112,8 +123,37 @@ open class Users(
      * Create a <code>public.users</code> table reference
      */
     constructor(): this(DSL.name("users"), null)
+
+    constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UsersRecord>?, parentPath: InverseForeignKey<out Record, UsersRecord>?): this(Internal.createPathAlias(path, childPath, parentPath), path, childPath, parentPath, USERS, null, null)
+
+    /**
+     * A subtype implementing {@link Path} for simplified path-based joins.
+     */
+    open class UsersPath : Users, Path<UsersRecord> {
+        constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UsersRecord>?, parentPath: InverseForeignKey<out Record, UsersRecord>?): super(path, childPath, parentPath)
+        private constructor(alias: Name, aliased: Table<UsersRecord>): super(alias, aliased)
+        override fun `as`(alias: String): UsersPath = UsersPath(DSL.name(alias), this)
+        override fun `as`(alias: Name): UsersPath = UsersPath(alias, this)
+        override fun `as`(alias: Table<*>): UsersPath = UsersPath(alias.qualifiedName, this)
+    }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
-    override fun getIdentity(): Identity<UsersRecord, Long?> = super.getIdentity() as Identity<UsersRecord, Long?>
+    override fun getPrimaryKey(): UniqueKey<UsersRecord> = USERS_PKEY
+
+    private lateinit var _userCreds: UserCredsPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.user_creds</code>
+     * table
+     */
+    fun userCreds(): UserCredsPath {
+        if (!this::_userCreds.isInitialized)
+            _userCreds = UserCredsPath(this, null, USER_CREDS__USER_CREDS_USER_ID_FKEY.inverseKey)
+
+        return _userCreds;
+    }
+
+    val userCreds: UserCredsPath
+        get(): UserCredsPath = userCreds()
     override fun `as`(alias: String): Users = Users(DSL.name(alias), this)
     override fun `as`(alias: Name): Users = Users(alias, this)
     override fun `as`(alias: Table<*>): Users = Users(alias.qualifiedName, this)

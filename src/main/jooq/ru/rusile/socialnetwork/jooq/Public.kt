@@ -10,6 +10,7 @@ import org.jooq.Catalog
 import org.jooq.Table
 import org.jooq.impl.SchemaImpl
 
+import ru.rusile.socialnetwork.jooq.tables.UserCreds
 import ru.rusile.socialnetwork.jooq.tables.Users
 
 
@@ -27,6 +28,11 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     }
 
     /**
+     * The table <code>public.user_creds</code>.
+     */
+    val USER_CREDS: UserCreds get() = UserCreds.USER_CREDS
+
+    /**
      * The table <code>public.users</code>.
      */
     val USERS: Users get() = Users.USERS
@@ -34,6 +40,7 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
+        UserCreds.USER_CREDS,
         Users.USERS
     )
 }

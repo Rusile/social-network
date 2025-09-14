@@ -23,6 +23,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -39,6 +40,11 @@ dependencies {
     jooqGenerator("org.jooq:jooq-meta-extensions:3.19.8")
     jooqGenerator("org.jooq:jooq-meta:3.19.8")
     jooqGenerator("org.jooq:jooq-codegen:3.19.8")
+
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.12.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 }
 
 kotlin {
@@ -55,14 +61,14 @@ jooq {
     version.set("3.19.8")
     configurations {
         create("main") {
-            generateSchemaSourceOnCompilation.set(false) // важно!
+            generateSchemaSourceOnCompilation.set(false)
 
             jooqConfiguration.apply {
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
-                    url = System.getenv("JDBC_URL") ?: "jdbc:postgresql://localhost:5432/social"
-                    user = System.getenv("DB_USER") ?: "user"
-                    password = System.getenv("DB_PASSWORD") ?: "password"
+                    url = System.getenv("JDBC_URL")
+                    user = System.getenv("DB_USER")
+                    password = System.getenv("DB_PASSWORD")
                 }
 
                 generator.apply {

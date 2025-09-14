@@ -1,7 +1,13 @@
 CREATE TABLE IF NOT EXISTS users (
-    id BIGSERIAL,
+    id UUID PRIMARY KEY,
     surname VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     birth_date DATE NOT NULL,
-    city varchar(255) NOT NULL,
-)
+    city VARCHAR(255) NOT NULL,
+    biography VARCHAR(512)
+);
+
+CREATE TABLE IF NOT EXISTS user_creds (
+    user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    password_hash VARCHAR(255) NOT NULL
+);

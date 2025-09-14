@@ -4,9 +4,15 @@
 package ru.rusile.socialnetwork.jooq.tables.references
 
 
+import ru.rusile.socialnetwork.jooq.tables.UserCreds
 import ru.rusile.socialnetwork.jooq.tables.Users
 
 
+
+/**
+ * The table <code>public.user_creds</code>.
+ */
+val USER_CREDS: UserCreds = UserCreds.USER_CREDS
 
 /**
  * The table <code>public.users</code>.
