@@ -24,7 +24,12 @@ class JwtUtil(jwtProps: JwtProperties) {
     }
 
     fun validateAndGetUserId(token: String): UUID {
-        val claims = Jwts.parser().decryptWith(key).build().parseSignedClaims(token).payload
+        val claims = Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token)
+            .payload
+
         return UUID.fromString(claims.subject)
     }
 }

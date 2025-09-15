@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import ru.rusile.socialnetwork.exception.BadCredsException
 
 @Component
 class JwtFilter(private val jwtUtil: JwtUtil) : OncePerRequestFilter() {
@@ -24,7 +25,7 @@ class JwtFilter(private val jwtUtil: JwtUtil) : OncePerRequestFilter() {
                 val auth = UsernamePasswordAuthenticationToken(userId, null, emptyList())
                 SecurityContextHolder.getContext().authentication = auth
             } catch (e: Exception) {
-                // TODO check
+                throw BadCredsException(e.message ?: "Can not parse token")
             }
         }
         filterChain.doFilter(request, response)
