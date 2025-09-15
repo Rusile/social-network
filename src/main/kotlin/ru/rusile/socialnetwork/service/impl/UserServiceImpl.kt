@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.rusile.socialnetwork.dao.UserCredsDao
 import ru.rusile.socialnetwork.dao.UserDao
+import ru.rusile.socialnetwork.exception.BadCredsException
+import ru.rusile.socialnetwork.exception.ResourceNotFoundException
 import ru.rusile.socialnetwork.model.User
 import ru.rusile.socialnetwork.model.UserCreds
 import ru.rusile.socialnetwork.model.UserWithId
@@ -43,11 +45,11 @@ class UserServiceImpl(
     }
 
     override fun login(userId: String, password: String): String {
-        val userCreds = userCredsDao.getById(UUID.fromString(password))
-            ?: throw IllegalArgumentException("User not found")
+        val userCreds = userCredsDao.getById(UUID.fromString(userId))
+            ?: throw ResourceNotFoundException("User not found")
 
         if (!encoder.matches(password, userCreds.passwordHash)) {
-            throw IllegalArgumentException("Bad credentials")
+            throw BadCredsException("Bad credentials")
         }
         return jwtUtil.generateToken(userCreds.userId)
     }

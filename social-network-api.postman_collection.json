@@ -1,0 +1,61 @@
+{
+  "info": {
+    "name": "Social Network API",
+    "_postman_id": "8b3b1c9c-3f7e-42c2-a6b3-2ef1b8d9c8f1",
+    "description": "Postman коллекция для тестирования Social Network API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": { "raw": "http://localhost:8080/user/register", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["user", "register"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Иван\",\n  \"second_name\": \"Егоров\",\n  \"birthdate\": \"1995-06-15\",\n  \"biography\": \"Люблю Kotlin и Highload\",\n  \"city\": \"Москва\",\n  \"password\": \"secret123\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": { "raw": "http://localhost:8080/login", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["login"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"<user_id>\",\n  \"password\": \"secret123\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get User by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/user/get/{{user_id}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["user", "get", "{{user_id}}"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    { "key": "token", "value": "" },
+    { "key": "user_id", "value": "" }
+  ]
+}

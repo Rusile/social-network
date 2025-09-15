@@ -27,6 +27,7 @@ services:
     container_name: social-network-api-app
     ports:
       - "8080:8080"
+      - "5005:5005"   # debug-порт
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/social
       SPRING_DATASOURCE_USERNAME: user
@@ -39,6 +40,8 @@ services:
       JDBC_URL: jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
       JWT_SECRET: "here-we-are-now-entertain-us-i-feel"
       JWT_EXPIRATION_MS: "3600000"
+      JAVA_TOOL_OPTIONS: >-
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     depends_on:
       - db
     healthcheck:

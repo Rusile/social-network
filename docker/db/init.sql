@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(255) NOT NULL,
     birth_date DATE NOT NULL,
     city VARCHAR(255) NOT NULL,
-    biography VARCHAR(512)
+    biography VARCHAR(511)
 );
 
 CREATE TABLE IF NOT EXISTS user_creds (
