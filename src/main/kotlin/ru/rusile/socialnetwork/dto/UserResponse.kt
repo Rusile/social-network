@@ -1,5 +1,6 @@
 package ru.rusile.socialnetwork.dto
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import ru.rusile.socialnetwork.model.UserWithId
 import java.time.LocalDate
@@ -11,6 +12,7 @@ data class UserResponse(
     val firstName: String,
     @field:JsonProperty("second_name")
     val secondName: String,
+    @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val birthdate: LocalDate,
     val biography: String?,
     val city: String
