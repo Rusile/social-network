@@ -40,3 +40,5 @@ out/
 .kotlin
 
 /db_data
+
+.env
