@@ -53,6 +53,8 @@ dependencies {
 
     // Liquibase
     implementation("org.liquibase:liquibase-core")
+
+    // Liquibase runtime
     liquibaseRuntime("org.liquibase:liquibase-core")
     liquibaseRuntime("org.postgresql:postgresql:42.7.3")
     liquibaseRuntime("info.picocli:picocli:4.7.6")

@@ -1,3 +1,5 @@
+--liquibase formatted sql
+
 --changeset rusile:user_creds:create_table
 CREATE TABLE IF NOT EXISTS user_creds
 (
