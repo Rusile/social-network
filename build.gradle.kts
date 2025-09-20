@@ -4,6 +4,7 @@ plugins {
     id("org.springframework.boot") version "3.5.5"
     id("io.spring.dependency-management") version "1.1.7"
     id("nu.studer.jooq") version "9.0"
+    id("org.liquibase.gradle") version "2.2.0"
 }
 
 group = "ru.rusile"
@@ -49,6 +50,14 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
+
+    // Liquibase
+    implementation("org.liquibase:liquibase-core")
+
+    // Liquibase runtime
+    liquibaseRuntime("org.liquibase:liquibase-core")
+    liquibaseRuntime("org.postgresql:postgresql:42.7.3")
+    liquibaseRuntime("info.picocli:picocli:4.7.6")
 }
 
 kotlin {
@@ -93,3 +102,15 @@ jooq {
     }
 }
 
+liquibase {
+    activities.register("main") {
+        this.arguments = mapOf(
+            "logLevel" to "info",
+            "changelogFile" to "src/main/resources/db/db.changelog-master.xml",
+            "url" to System.getenv("JDBC_URL"),
+            "username" to System.getenv("DB_USER"),
+            "password" to System.getenv("DB_PASSWORD")
+        )
+    }
+    runList = "main"
+}
