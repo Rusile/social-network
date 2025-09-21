@@ -9,6 +9,5 @@
 
     <include file="sql/users.sql" relativeToChangelogFile="true"/>
     <include file="sql/user_creds.sql" relativeToChangelogFile="true"/>
-    <include file="sql/users_inserts.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
