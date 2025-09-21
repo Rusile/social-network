@@ -55,4 +55,9 @@ class UserServiceImpl(
     }
 
     override fun getByUserId(userId: UUID) = userDao.getById(userId)
+
+    override fun searchUsers(
+        firstName: String,
+        lastName: String
+    ): List<UserWithId> = userDao.searchUsers(firstName, lastName)
 }

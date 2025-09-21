@@ -24,20 +24,40 @@ class UserDaoImpl(
             .execute()
     }
 
-    override fun getById(id: UUID): UserWithId? {
-        return dsl.selectFrom(USERS)
-            .where(USERS.ID.eq(id))
-            .fetchOne { record ->
-                UserWithId(
-                    id = record[USERS.ID]!!,
-                    user = User(
-                        secondName = record.surname!!,
-                        firstName = record.name!!,
-                        birthdate = record.birthDate!!,
-                        city = record.city!!,
-                        biography = record.biography
-                    ),
-                )
-            }
-    }
+    override fun getById(
+        id: UUID
+    ) = dsl.selectFrom(USERS)
+        .where(USERS.ID.eq(id))
+        .fetchOne { record ->
+            UserWithId(
+                id = record[USERS.ID]!!,
+                user = User(
+                    secondName = record.surname!!,
+                    firstName = record.name!!,
+                    birthdate = record.birthDate!!,
+                    city = record.city!!,
+                    biography = record.biography
+                ),
+            )
+        }
+
+    override fun searchUsers(
+        firstName: String,
+        lastName: String
+    ) = dsl.selectFrom(USERS)
+        .where(
+            USERS.NAME.like("%$firstName%")
+                .and(USERS.SURNAME.like("%$lastName%"))
+        ).fetch { record ->
+            UserWithId(
+                id = record[USERS.ID]!!,
+                user = User(
+                    secondName = record.surname!!,
+                    firstName = record.name!!,
+                    birthdate = record.birthDate!!,
+                    city = record.city!!,
+                    biography = record.biography
+                ),
+            )
+        }
 }
