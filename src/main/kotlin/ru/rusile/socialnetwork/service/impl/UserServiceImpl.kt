@@ -2,7 +2,6 @@ package ru.rusile.socialnetwork.service.impl
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import ru.rusile.socialnetwork.dao.UserCredsDao
 import ru.rusile.socialnetwork.dao.UserDao

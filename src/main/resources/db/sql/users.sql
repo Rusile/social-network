@@ -15,4 +15,4 @@ CREATE TABLE IF NOT EXISTS users
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 CREATE INDEX IF NOT EXISTS idx_users_name_surname_trgm
-    ON users USING gin (name gin_trgm_ops, surname gin_trgm_ops);
+    ON users USING gin (LOWER(name) gin_trgm_ops, LOWER(surname) gin_trgm_ops);
