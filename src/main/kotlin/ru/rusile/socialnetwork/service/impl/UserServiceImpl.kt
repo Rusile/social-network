@@ -3,6 +3,7 @@ package ru.rusile.socialnetwork.service.impl
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import ru.rusile.socialnetwork.dao.UserCredsDao
 import ru.rusile.socialnetwork.dao.UserDao
 import ru.rusile.socialnetwork.exception.BadCredsException
@@ -17,29 +18,32 @@ import java.util.UUID
 @Service
 class UserServiceImpl(
     private val userDao: UserDao,
-    private val userCredsDao: UserCredsDao,
     private val jwtUtil: JwtUtil,
+    private val userCredsDao: UserCredsDao,
+    private val transactionTemplate: TransactionTemplate,
 ) : UserService {
 
     private val encoder = BCryptPasswordEncoder()
 
-    @Transactional
     override fun register(user: User, password: String): UUID {
         val userId = UUID.randomUUID()
-        userDao.insert(
-            UserWithId(
-                id = userId,
-                user = user
-            )
-        )
-
         val hash = encoder.encode(password)
-        userCredsDao.insert(
-            UserCreds(
-                userId = userId,
-                passwordHash = hash
+
+        transactionTemplate.executeWithoutResult {
+            userDao.insert(
+                UserWithId(
+                    id = userId,
+                    user = user
+                )
             )
-        )
+
+            userCredsDao.insert(
+                UserCreds(
+                    userId = userId,
+                    passwordHash = hash
+                )
+            )
+        }
 
         return userId
     }
