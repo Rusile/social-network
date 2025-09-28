@@ -1,6 +1,7 @@
 package ru.rusile.socialnetwork.dao.impl
 
 import org.jooq.DSLContext
+import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
 import ru.rusile.socialnetwork.dao.UserDao
 import ru.rusile.socialnetwork.jooq.tables.references.USERS
@@ -46,8 +47,8 @@ class UserDaoImpl(
         lastName: String
     ) = dsl.selectFrom(USERS)
         .where(
-            USERS.NAME.like("%${firstName.lowercase()}%")
-                .and(USERS.SURNAME.like("%${lastName.lowercase()}%"))
+            DSL.lower(USERS.NAME).like("%${firstName.lowercase()}%")
+                .and(DSL.lower(USERS.SURNAME).like("%${lastName.lowercase()}%"))
         ).fetch { record ->
             UserWithId(
                 id = record[USERS.ID]!!,
