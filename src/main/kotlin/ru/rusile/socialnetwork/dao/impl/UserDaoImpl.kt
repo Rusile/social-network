@@ -47,8 +47,8 @@ class UserDaoImpl(
         lastName: String
     ) = dsl.selectFrom(USERS)
         .where(
-            DSL.lower(USERS.NAME).like("%${firstName.lowercase()}%")
-                .and(DSL.lower(USERS.SURNAME).like("%${lastName.lowercase()}%"))
+            DSL.lower(USERS.NAME).like("${firstName.lowercase()}%")
+                .and(DSL.lower(USERS.SURNAME).like("${lastName.lowercase()}%"))
         ).fetch { record ->
             UserWithId(
                 id = record[USERS.ID]!!,
