@@ -1,6 +1,7 @@
 package ru.rusile.socialnetwork.dao.impl
 
 import org.jooq.DSLContext
+import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
 import ru.rusile.socialnetwork.dao.UserDao
 import ru.rusile.socialnetwork.jooq.tables.references.USERS
@@ -24,20 +25,40 @@ class UserDaoImpl(
             .execute()
     }
 
-    override fun getById(id: UUID): UserWithId? {
-        return dsl.selectFrom(USERS)
-            .where(USERS.ID.eq(id))
-            .fetchOne { record ->
-                UserWithId(
-                    id = record[USERS.ID]!!,
-                    user = User(
-                        secondName = record.surname!!,
-                        firstName = record.name!!,
-                        birthdate = record.birthDate!!,
-                        city = record.city!!,
-                        biography = record.biography
-                    ),
-                )
-            }
-    }
+    override fun getById(
+        id: UUID
+    ) = dsl.selectFrom(USERS)
+        .where(USERS.ID.eq(id))
+        .fetchOne { record ->
+            UserWithId(
+                id = record[USERS.ID]!!,
+                user = User(
+                    secondName = record.surname!!,
+                    firstName = record.name!!,
+                    birthdate = record.birthDate!!,
+                    city = record.city!!,
+                    biography = record.biography
+                ),
+            )
+        }
+
+    override fun searchUsers(
+        firstName: String,
+        lastName: String
+    ) = dsl.selectFrom(USERS)
+        .where(
+            DSL.lower(USERS.NAME).like("${firstName.lowercase()}%")
+                .and(DSL.lower(USERS.SURNAME).like("${lastName.lowercase()}%"))
+        ).fetch { record ->
+            UserWithId(
+                id = record[USERS.ID]!!,
+                user = User(
+                    secondName = record.surname!!,
+                    firstName = record.name!!,
+                    birthdate = record.birthDate!!,
+                    city = record.city!!,
+                    biography = record.biography
+                ),
+            )
+        }
 }

@@ -11,4 +11,6 @@ interface UserService {
     fun login(userId: String, password: String): String
 
     fun getByUserId(userId: UUID): UserWithId?
+
+    fun searchUsers(firstName: String, lastName: String): List<UserWithId>
 }

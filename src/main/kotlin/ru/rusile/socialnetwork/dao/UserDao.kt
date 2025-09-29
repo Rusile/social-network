@@ -8,4 +8,6 @@ interface UserDao {
     fun insert(user: UserWithId)
 
     fun getById(id: UUID): UserWithId?
+
+    fun searchUsers(firstName: String, lastName: String): List<UserWithId>
 }
