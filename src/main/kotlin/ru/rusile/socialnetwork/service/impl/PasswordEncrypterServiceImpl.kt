@@ -58,6 +58,6 @@ class PasswordEncrypterServiceImpl : PasswordEncrypterService {
         private const val ITERATIONS_COUNT = 10_000
         private const val SALT_LENGTH_IN_BITS = 16
         private const val KEY_LENGTH_IN_BITS = 256
-        private const val RANDOM = SecureRandom()
+        private val RANDOM = SecureRandom()
     }
 }
