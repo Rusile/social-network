@@ -1,6 +1,5 @@
 package ru.rusile.socialnetwork.service.impl
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
 import ru.rusile.socialnetwork.dao.UserCredsDao
@@ -11,8 +10,9 @@ import ru.rusile.socialnetwork.model.User
 import ru.rusile.socialnetwork.model.UserCreds
 import ru.rusile.socialnetwork.model.UserWithId
 import ru.rusile.socialnetwork.security.JwtUtil
+import ru.rusile.socialnetwork.service.PasswordEncrypterService
 import ru.rusile.socialnetwork.service.UserService
-import java.util.UUID
+import java.util.*
 
 @Service
 class UserServiceImpl(
@@ -20,13 +20,12 @@ class UserServiceImpl(
     private val jwtUtil: JwtUtil,
     private val userCredsDao: UserCredsDao,
     private val transactionTemplate: TransactionTemplate,
+    private val passwordEncrypterService: PasswordEncrypterService
 ) : UserService {
-
-    private val encoder = BCryptPasswordEncoder()
 
     override fun register(user: User, password: String): UUID {
         val userId = UUID.randomUUID()
-        val hash = encoder.encode(password)
+        val hash = passwordEncrypterService.hashPassword(password)
 
         transactionTemplate.executeWithoutResult {
             userDao.insert(
@@ -43,7 +42,6 @@ class UserServiceImpl(
                 )
             )
         }
-
         return userId
     }
 
@@ -51,7 +49,11 @@ class UserServiceImpl(
         val userCreds = userCredsDao.getById(UUID.fromString(userId))
             ?: throw ResourceNotFoundException("User not found")
 
-        if (!encoder.matches(password, userCreds.passwordHash)) {
+        val isPasswordCorrect = passwordEncrypterService.verifyPassword(
+            storedHash = userCreds.passwordHash,
+            inputPassword = password
+        )
+        if (!isPasswordCorrect) {
             throw BadCredsException("Bad credentials")
         }
         return jwtUtil.generateToken(userCreds.userId)
